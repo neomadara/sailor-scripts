@@ -1,5 +1,5 @@
 // Configuración
-const API_URL = 'https://api.sailormentor.com/'; // Ajusta la URL según tu API
+const API_URL = 'https://api.sailormentor.com/register'; // Ajusta la URL según tu API
 const DEFAULT_PASSWORD = 'abc123'; // Contraseña manual (máximo 8 caracteres)
 
 // Función para generar contraseña aleatoria
@@ -37,15 +37,24 @@ async function registerUser(email, nombre, manualPassword = null) {
       })
     });
     
-    const data = await response.json();
+    console.log('📊 Status Code:', response.status);
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (response.status === 200) {
+      console.log('✓ Usuario creado exitosamente');
+      return { success: true };
+    } else {
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        data = await response.text();
+      }
+      
+      console.error('✗ Error al registrar usuario');
+      console.error('Status:', response.status);
+      console.error('Respuesta:', data);
+      return { success: false, error: `HTTP error! status: ${response.status}`, data };
     }
-    
-    console.log('✓ Usuario registrado exitosamente');
-    console.log('Respuesta:', data);
-    return { success: true, data };
     
   } catch (error) {
     console.error('✗ Error al registrar usuario:');
@@ -82,12 +91,12 @@ async function registerMultipleUsers(users) {
 // Lista de usuarios a registrar
 const users = [
   {
-    email: 'usuario1@example.com',
+    email: 'usuario898989@example.com',
     nombre: 'Juan Perez',
     password: '' // Deja vacío para usar DEFAULT_PASSWORD
   },
   {
-    email: 'usuario2@example.com',
+    email: 'usuario454545@example.com',
     nombre: 'Maria Garcia',
     password: 'custom123' // O especifica una contraseña personalizada
   }
